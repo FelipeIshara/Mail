@@ -1,0 +1,70 @@
+#emails-view{
+border: 2px black solid;
+border-radius: 10px;
+background-color: whitesmoke;
+box-shadow: 3px 3px 5px 0px black;
+transition: background-color 1s;
+    h3{
+        padding: 5px 0px 5px 10px;
+        
+    }
+    .emaildiv:hover{
+        background-color: black;
+        color: white;
+        .archived-btn{
+            display: block;
+        }
+        .timestampdiv{
+            color: whitesmoke;
+        }
+    }
+    .unreadstyle{
+        font-weight: bolder;
+        background-color: white;
+    }
+    .readstyle{
+        background-color: rgb(185, 185, 185);
+    }
+    .emaildiv{
+        display: flex;
+        border-top: 1px black solid;
+        padding: 10px;
+        border-collapse: collapse;
+        margin-bottom: -1px;
+        font-size: 10pt;
+        height: 35px;
+        line-height: 0px;
+        align-items: center;
+        div{
+            margin: 2.5px;
+            padding: 2.5px;
+        }
+        .senderdiv{
+            font-weight: bolder;
+        }
+        .timestampdiv{
+            margin-left: auto;
+            color: rgb(32, 32, 32);
+        }
+        .archived-btn{
+            display: none;
+            background-color: rgb(0, 0, 0);
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            
+            font-size: 8pt;
+            border-radius: 5px;
+            color: white;
+            padding: 10px;
+            
+        }
+    }
+}
+
+
+//single view 
+
+#emailbody-div{
+  border-top: 1px gray solid;
+  margin-top: 35px;
+  padding-top: 25px;
+}
