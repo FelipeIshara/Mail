@@ -22,6 +22,25 @@ function compose_email() {
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+  //send email
+  document.querySelector('#compose-form').onsubmit = function(){
+    console.log("submiting form")
+    recipents = document.querySelector('#compose-recipients').value
+    subject = document.querySelector('#compose-subject').value
+    body = document.querySelector('#compose-body').value
+    fetch('/emails', {
+      method: 'POST',
+      body: JSON.stringify({
+          recipients: recipents,
+          subject: subject,
+          body: body
+      })
+    }).then(response => response.json()).then(result => {
+        load_mailbox('sent')
+        console.log(result);
+      });
+    return false  
+  }
 }
 
 
@@ -43,26 +62,11 @@ function load_mailbox(mailbox) {
 
 
 //Send Email.
-document.addEventListener('DOMContentLoaded', function(){
-  document.querySelector('#compose-form').onsubmit = function(){
-    console.log("submiting form")
-    recipents = document.querySelector('#compose-recipients').value
-    subject = document.querySelector('#compose-subject').value
-    body = document.querySelector('#compose-body').value
-    fetch('/emails', {
-      method: 'POST',
-      body: JSON.stringify({
-          recipients: recipents,
-          subject: subject,
-          body: body
-      })
-    }).then(response => response.json()).then(result => {
-        load_mailbox('sent')
-        console.log(result.read);
-      });
-    return false
-  }
-})
+function send_email(){
+  
+}
+
+
 
 
 //load emails for mailbox
@@ -89,19 +93,26 @@ function load_mailbox_emails(mailbox) {
       timestampDiv = document.createElement('div')
       timestampDiv.setAttribute("class","timestampdiv")
       timestampDiv.innerHTML = email.timestamp
+      
+      console.log(`inbox: ${email.read} ${email.subject}`)
+        if (!email.read){
+          //if unread
+          emailDiv.classList.add("unreadstyle")
+        } else { //if read
+          console.log("why?")
+          emailDiv.classList.add("readstyle")
+        }
+        
       if (mailbox === "sent"){
         //add divs to email div
+        console.log(`sent: ${email.read} ${email.subject}`)
         emailDiv.append(senderDiv, subjectDiv, timestampDiv);
       } 
 
       //if inbox
       if (mailbox === "inbox") {
         //add a class for readed emails
-        if (email.read){
-          emailDiv.classList.add("unreadstyle")
-        } else {
-          emailDiv.classList.add("readstyle")
-        }
+        
         // create a archive button
         archivedBtn = document.createElement('button')
         archivedBtn.setAttribute("class","archived-btn")
@@ -126,6 +137,7 @@ function load_mailbox_emails(mailbox) {
       //if click on div but not in the archive button
       emailDiv.addEventListener('click', (event) => {
         if (event.target.className !== "archived-btn"){
+          console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
           view_Email(email)
         }
       })
@@ -142,17 +154,17 @@ function load_mailbox_emails(mailbox) {
 
 function view_Email(email){
   // Show the mailbox and hide other views
+  console.log("QUEISSOCARA")
   console.log(`read:${email.read}`)
   console.log(`archived:${email.archived}`)
-  if(email.read){  
-    fetch(`/emails/${email.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        read: true
-      })
+  fetch(`/emails/${email.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
     })
-    console.log("LEU!!!!!!!!!!!!!!")
-  }
+  })
+  console.log("LEU!!!!!!!!!!!!!!")
+  
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#view-email').style.display = 'block';
