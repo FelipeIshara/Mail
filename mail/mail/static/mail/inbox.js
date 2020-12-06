@@ -163,30 +163,49 @@ function view_Email(email){
   document.querySelector('#emailbody-div').innerHTML = `${email.body}`
   document.querySelector('#reply-btn').addEventListener('click', function() {
   })
+  
+  if (email.archived){
+    archiveBtn = document.querySelector('#archive-btn-email-view')
+    archiveBtn.innerHTML = "Unarchive"
+    archiveBtn.setAttribute('class', 'btn-warning')
+    archiveBtn.classList.add("btn") 
+    archiveBtn.onclick = () => archive_email(email)
+  } else {
+    archiveBtn = document.querySelector('#archive-btn-email-view')
+    archiveBtn.innerHTML = "Archive"
+    archiveBtn.setAttribute('class', "btn-secondary")
+    archiveBtn.classList.add("btn")
+    archiveBtn.onclick = () => archive_email(email)
+  }
+  
+  
 }
 
 
 //archive/ unarchived email
 async function archive_email(email){
   if (!email.archived){
-    console.log("archiving email")
+  try {
     await fetch(`/emails/${email.id}`, {
       method: 'PUT',
       body: JSON.stringify({
           archived: true
       })
-    })
-    load_mailbox('inbox')
-  } else {
-    console.log("unarchiving email")
-    await fetch(`/emails/${email.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-          archived: false
-      })
-    })
-    load_mailbox('archive')
+    }).then(() => load_mailbox('inbox')).then(()=>console.log("arquived"))
+  } catch (error) {
+    console.log(error)
   }
-  console.log("aaaaaaaaa")
-  
+    
+  } else {
+    try {
+      await fetch(`/emails/${email.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: false
+        })
+      }).then(() => load_mailbox('inbox')).then(()=>console.log("unarquived"))
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
