@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#compose').addEventListener('click', () => compose_email());
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -12,16 +12,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Show compose view and hide other views
-function compose_email() {
+function compose_email(reply=false, preFillContent=null) {
 
-  
+  document.querySelector('#view-email').style.display = 'none';
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
-  // Clear out composition fields
-  document.querySelector('#compose-recipients').value = '';
-  document.querySelector('#compose-subject').value = '';
-  document.querySelector('#compose-body').value = '';
+  
+  if (reply){
+    console.log(preFillContent)
+    document.querySelector('#compose-recipients').value = preFillContent[0];
+    let substring1 = preFillContent[1].substring(0,3)
+    console.log(substring1)
+    if (preFillContent[1].substring(0,3) === "Re:"){
+      document.querySelector('#compose-subject').value = `${preFillContent[1]}`;
+    }else{
+      document.querySelector('#compose-subject').value = `Re: ${preFillContent[1]}`;
+    }
+    document.querySelector('#compose-body').value = `On ${preFillContent[2]}, ${preFillContent[0]} wrote: ${preFillContent[3]}` ;
+  } else {
+    // Clear out composition fields
+    document.querySelector('#compose-recipients').value = '';
+    document.querySelector('#compose-subject').value = '';
+    document.querySelector('#compose-body').value = '';
+  }
   //send email
   document.querySelector('#compose-form').onsubmit = function(){
     console.log("submiting form")
@@ -102,7 +116,7 @@ function load_mailbox_emails(mailbox) {
           console.log("why?")
           emailDiv.classList.add("readstyle")
         }
-        
+
       if (mailbox === "sent"){
         //add divs to email div
         console.log(`sent: ${email.read} ${email.subject}`)
@@ -169,11 +183,13 @@ function view_Email(email){
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#view-email').style.display = 'block';
   document.querySelector('#from-div').innerHTML = `<strong>From:</strong> ${email.sender}`
-  document.querySelector('#to-div').innerHTML = `<strong>To:</strong> ${email.recipents}`
+  document.querySelector('#to-div').innerHTML = `<strong>To:</strong> ${email.recipients}`
   document.querySelector('#subject-div').innerHTML = `<strong>Subject:</strong> ${email.subject}`
   document.querySelector('#timestamp-div').innerHTML = `<strong>Timestamp:</strong> ${email.timestamp}`
   document.querySelector('#emailbody-div').innerHTML = `${email.body}`
   document.querySelector('#reply-btn').addEventListener('click', function() {
+    const preFillContent = [email.sender, email.subject, email.timestamp, email.body]
+    compose_email(reply=true, preFillContent)
   })
   
   if (email.archived){
